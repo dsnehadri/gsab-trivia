@@ -86,7 +86,7 @@ def main():
         "iterations": ITERATIONS,
         "keys": keys,
         "check": check,
-        "rounds": [{"name": r["name"], "blurb": r.get("blurb", ""), "count": len(r["questions"])} for r in data["rounds"]],
+        "rounds": [{"name": r["name"], "count": len(r["questions"])} for r in data["rounds"]],
         "data": base64.b64encode(iv + result.stdout).decode("ascii"),
     }
     (ROOT / "locked.js").write_text(

@@ -18,8 +18,8 @@ and Art.
 3. Add teams under **Teams & scores**.
 4. Press **Next** (or →, Space, or a clicker's Page Down) to move along.
 
-Each round goes: title, eight questions with a 45-second timer each, "pencils
-down", the eight answers with a fun fact each, then the standings. Teams swap
+Each round goes: title, eight questions with a 45-second timer each, the
+eight answers, then the standings. Teams swap
 sheets to mark them, and you type each team's round score into **Teams &
 scores**. The final screen names the winners.
 

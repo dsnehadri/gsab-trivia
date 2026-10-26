@@ -16,8 +16,8 @@ if (!LOCK) {
   document.getElementById("stage").innerHTML = `<p class="lede">locked.js is missing. Run set-host-codes.py to create it.</p>`;
   return;
 }
-const ROUNDS = LOCK.rounds;          // public: name, blurb, count
-let QS = null;                       // unlocked: per round, [question, options, answer index, fact]
+const ROUNDS = LOCK.rounds;          // public: name, count
+let QS = null;                       // unlocked: per round, [question, options, answer index]
 
 /* ---------- Unlocking ---------- */
 const enc = new TextEncoder();
@@ -44,7 +44,7 @@ async function openQuestions(keyHex) {
   const key = await crypto.subtle.importKey("raw", hexToBytes(keyHex), { name: "AES-CBC" }, false, ["decrypt"]);
   const plain = await crypto.subtle.decrypt({ name: "AES-CBC", iv: raw.slice(0, 16) }, key, raw.slice(16));
   const data = JSON.parse(new TextDecoder().decode(plain));
-  return data.rounds.map(r => r.questions.map(q => [q.q, q.options, L.indexOf(q.answer), q.fact || ""]));
+  return data.rounds.map(r => r.questions.map(q => [q.q, q.options, L.indexOf(q.answer)]));
 }
 window.GSAB_TEST = { keyFromCode, openQuestions };
 
@@ -83,7 +83,7 @@ function slideFor(i) {
   if ((s.t === "q" || s.t === "a") && QS) {
     const q = QS[s.r][s.q];
     out.text = q[0]; out.opts = q[1];
-    if (s.t === "a") { out.answer = q[2]; out.fact = q[3]; }
+    if (s.t === "a") out.answer = q[2];
   }
   return out;
 }
@@ -125,7 +125,7 @@ function paintTimer() {
   const left = timeLeft();
   el.classList.toggle("low", left < 10000);
   el.querySelector(".fill").style.transform = `scaleX(${left / (QUESTION_SECONDS * 1000)})`;
-  el.querySelector(".secs").innerHTML = left > 0 ? Math.ceil(left / 1000) + "s" : `<span class="done">Pencils down</span>`;
+  el.querySelector(".secs").innerHTML = left > 0 ? Math.ceil(left / 1000) + "s" : `<span class="done">Time's up</span>`;
   if (isHost) $("tmr").textContent = state.timer.running && left > 0 ? "Pause timer" : left > 0 ? "Resume timer" : "Restart timer";
 }
 
@@ -154,18 +154,17 @@ function render() {
   const R = s.r !== undefined ? ROUNDS[s.r] : null;
   if (s.t === "welcome") {
     st.innerHTML = `
-      <p class="eyebrow">Tonight · ${n} rounds of ${ROUNDS[0].count}</p>
-      <h2 class="display">Welcome to Maroon Trivia Night</h2>
-      <p class="lede">Form your team, grab a pencil, and write each answer as A, B, C or D.</p>
-      <ol class="roundlist">${ROUNDS.map((r, i) => `<li><span class="num">Round ${i + 1}</span><strong>${esc(r.name)}</strong><small>${esc(r.blurb)}</small></li>`).join("")}</ol>
+      <p class="eyebrow">${n} rounds of ${ROUNDS[0].count}</p>
+      <h2 class="display">Welcome</h2>
+      <p class="lede">Write each answer as A, B, C or D.</p>
+      <ol class="roundlist">${ROUNDS.map((r, i) => `<li><span class="num">Round ${i + 1}</span><strong>${esc(r.name)}</strong></li>`).join("")}</ol>
       ${state.teams.length ? `<p class="lede">Teams tonight: ${state.teams.map(t => esc(t.name)).join(", ")}</p>` : ""}
       ${isHost ? `<p class="wait">Press Next when everyone's ready.</p>` : waiting}`;
   } else if (s.t === "round") {
     st.innerHTML = `
       <p class="eyebrow">Round ${s.r + 1} of ${n}</p>
       <h2 class="display huge">${esc(R.name)}</h2>
-      <p class="lede">${esc(R.blurb)}. ${R.count} questions, ${QUESTION_SECONDS} seconds each.</p>
-      <p class="wait">Number your sheet 1 to ${R.count}.</p>`;
+      <p class="lede">${R.count} questions, ${QUESTION_SECONDS} seconds each. Number your sheet 1 to ${R.count}.</p>`;
   } else if (s.t === "q" || s.t === "a") {
     const reveal = s.t === "a";
     if (!s.text) { st.innerHTML = `<p class="eyebrow">Round ${s.r + 1} · ${esc(R.name)}</p>${waiting}`; renderChrome(); return; }
@@ -179,27 +178,25 @@ function render() {
         const cls = reveal ? (k === s.answer ? "right" : "dim") : "";
         return `<li class="opt ${cls}"><span class="key">${L[k]}</span><span>${esc(o)}</span>${reveal && k === s.answer ? `<span class="mark" aria-label="correct answer">✓</span>` : ""}</li>`;
       }).join("")}</ul>
-      ${reveal ? `<p class="fact"><b>${L[s.answer]}: ${esc(s.opts[s.answer])}.</b> ${esc(s.fact)}</p>` : ""}`;
+`;
     paintTimer();
   } else if (s.t === "answers") {
     st.innerHTML = `
       <p class="eyebrow">Round ${s.r + 1} · ${esc(R.name)}</p>
-      <h2 class="display">Pencils down. Time for the answers.</h2>
-      <p class="lede">Swap sheets with a neighboring team and mark each other's answers. One point for each correct letter.</p>`;
+      <h2 class="display">Answers</h2>
+      <p class="lede">Swap sheets with another team and mark them. One point per correct answer.</p>`;
   } else if (s.t === "scores") {
     st.innerHTML = `
       <p class="eyebrow">Standings after round ${s.r + 1} of ${n}</p>
-      <h2 class="display">${s.r === n - 1 ? "Final scores are in" : "How everyone's doing"}</h2>
-      ${standingsTable(s.r)}
-      ${s.r < n - 1 ? `<p class="wait">Up next: ${esc(ROUNDS[s.r + 1].name)}</p>` : ""}`;
+      <h2 class="display">Standings</h2>
+      ${standingsTable(s.r)}`;
   } else if (s.t === "final") {
     const rows = state.teams.map(t => ({ t, sum: total(t) })).sort((a, b) => b.sum - a.sum);
     const top = rows.length ? rows[0].sum : 0;
     const winners = rows.filter(x => x.sum === top && top > 0).map(x => esc(x.t.name));
     st.innerHTML = `
-      <p class="eyebrow">Final standings</p>
-      <h2 class="display">Thanks for playing!</h2>
-      ${winners.length ? `<p class="winner">${winners.length > 1 ? "Tied for first" : "Winners"}: ${winners.join(" & ")} with ${top} points</p>` : ""}
+      <h2 class="display">Final standings</h2>
+      ${winners.length ? `<p class="winner">${winners.length > 1 ? "Tied for first" : "Winner"}: ${winners.join(" & ")}, ${top} points</p>` : ""}
       ${standingsTable(n - 1)}`;
   }
   renderChrome();
@@ -208,8 +205,8 @@ function render() {
 function stepLabel(i) {
   const s = SEQ[i]; if (!s) return "";
   return {
-    welcome: "Welcome screen", round: `Round ${s.r + 1} title (${ROUNDS[s.r]?.name})`, q: `R${s.r + 1} question ${s.q + 1}`,
-    answers: `R${s.r + 1} answers intro`, a: `R${s.r + 1} answer ${s.q + 1}`, scores: `Standings after R${s.r + 1}`, final: "Final standings",
+    welcome: "Welcome screen", round: `Round ${s.r + 1}: ${ROUNDS[s.r]?.name}`, q: `R${s.r + 1} question ${s.q + 1}`,
+    answers: `R${s.r + 1} answers`, a: `R${s.r + 1} answer ${s.q + 1}`, scores: `Standings after R${s.r + 1}`, final: "Final standings",
   }[s.t];
 }
 
@@ -222,7 +219,7 @@ function renderChrome() {
   $("where").innerHTML = `${esc(stepLabel(state.step))}<small>Step ${state.step + 1} of ${SEQ.length}${nxt ? " · Next: " + esc(stepLabel(state.step + 1)) : ""}</small>`;
   $("prev").disabled = state.step === 0;
   $("next").disabled = !nxt;
-  $("next").textContent = !nxt ? "End of game" : nxt.t === "round" ? `Start round ${nxt.r + 1} →` : nxt.t === "answers" ? "Pencils down →"
+  $("next").textContent = !nxt ? "End of game" : nxt.t === "round" ? `Start round ${nxt.r + 1} →` : nxt.t === "answers" ? "Show answers →"
     : nxt.t === "scores" ? "Show standings →" : nxt.t === "final" ? "Final standings →" : "Next →";
   $("tmr").hidden = s.t !== "q";
   $("peekBtn").hidden = s.t !== "q";

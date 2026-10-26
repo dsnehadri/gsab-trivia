@@ -83,7 +83,6 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
 .roundlist li { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 2px; }
 .roundlist .num { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .roundlist strong { font-family: var(--f-display); font-size: 1.6rem; line-height: 1.1; }
-.roundlist small { color: var(--muted); font-size: .9rem; }
 
 .qhead { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .qnum { font-family: var(--f-display); font-weight: 700; font-size: clamp(1.1rem, 1vw + .8rem, 1.6rem); color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -102,8 +101,6 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
 .opt.right .key { background: var(--good); color: var(--paper); }
 .opt.dim { opacity: .45; }
 .mark { margin-left: auto; font-family: var(--f-mark); font-size: 1.6em; color: var(--good); line-height: 1; transform: rotate(-8deg); }
-.fact { margin: 0; background: var(--accent-soft); border-radius: 12px; padding: 14px 18px; font-size: clamp(1rem, .9vw + .7rem, 1.45rem); max-width: 70ch; }
-.fact b { color: var(--accent); }
 
 .standings { width: 100%; border-collapse: collapse; font-size: clamp(1rem, 1vw + .6rem, 1.5rem); font-variant-numeric: tabular-nums; }
 .standings th { text-align: left; font-size: .7em; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
@@ -191,7 +188,6 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
 <div class="overlay" id="loginBox" hidden>
   <form class="panel" id="loginForm" autocomplete="off">
     <h3>Trivia master login</h3>
-    <p>Enter your host code to run the game from this screen.</p>
     <div class="field">
       <label for="code">Host code</label>
       <input class="input" id="code" type="password" required autocomplete="off">
@@ -207,7 +203,6 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
 <div class="overlay" id="teamsBox" hidden>
   <div class="panel wide" role="dialog" aria-label="Teams and scores">
     <div class="panel-head"><h3>Teams &amp; scores</h3><button class="btn ghost" id="teamsClose">Done</button></div>
-    <p>Enter each team's points for a round after marking the answer sheets. Standings update on screen right away.</p>
     <form class="row" id="addTeam">
       <label class="sr" for="teamName">Team name</label>
       <input class="input" id="teamName" placeholder="Team name" maxlength="40" style="flex:1 1 200px">
