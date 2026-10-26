@@ -1,0 +1,65 @@
+{
+  "rules": {
+    "trivia": {
+      "$room": {
+        ".validate": "$room.matches(/^[0-9a-f]{16}$/)",
+
+        "hostToken": {
+          ".read": false,
+          ".write": "auth != null && !data.exists()",
+          ".validate": "newData.isString() && newData.val().length == 64"
+        },
+
+        "hosts": {
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            ".write": "auth != null && auth.uid == $uid",
+            ".validate": "newData.isString() && newData.val() == root.child('trivia/' + $room + '/hostToken').val()"
+          }
+        },
+
+        "live": {
+          ".read": "auth != null",
+          ".write": "auth != null && root.child('trivia/' + $room + '/hosts/' + auth.uid).exists()"
+        },
+
+        "teams": {
+          ".read": "auth != null && root.child('trivia/' + $room + '/hosts/' + auth.uid).exists()",
+          ".write": "auth != null && root.child('trivia/' + $room + '/hosts/' + auth.uid).exists()",
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            ".write": "auth != null && auth.uid == $uid",
+            ".validate": "newData.hasChildren(['name'])",
+            "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 40" },
+            "$other": { ".validate": false }
+          }
+        },
+
+        "answers": {
+          ".read": "auth != null && root.child('trivia/' + $room + '/hosts/' + auth.uid).exists()",
+          ".write": "auth != null && root.child('trivia/' + $room + '/hosts/' + auth.uid).exists()",
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            "$r": {
+              "$q": {
+                ".write": "auth != null && auth.uid == $uid && root.child('trivia/' + $room + '/live/locked/' + $r).val() != true",
+                ".validate": "newData.isString() && newData.val().length <= 200"
+              }
+            }
+          }
+        },
+
+        "marks": {
+          ".read": "auth != null && root.child('trivia/' + $room + '/hosts/' + auth.uid).exists()",
+          ".write": "auth != null && root.child('trivia/' + $room + '/hosts/' + auth.uid).exists()",
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            "$r": { "$q": { ".validate": "newData.isBoolean()" } }
+          }
+        },
+
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}

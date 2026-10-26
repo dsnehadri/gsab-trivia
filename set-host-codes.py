@@ -18,7 +18,8 @@ one does not. The codes themselves are never written anywhere.
 Codes ignore case and surrounding spaces. Run this again after editing
 questions.json, passing the codes you want to keep.
 
-Every run also stamps index.html's script links with a hash of app.js and
+Every run opens a fresh game room in the live database (any game in progress
+is left behind) and stamps index.html's script links with a hash of app.js and
 locked.js (?v=...), so browsers fetch the new files instead of a cached copy.
 """
 
@@ -66,7 +67,7 @@ def stamp():
     """Point index.html's script tags at the current app.js and locked.js."""
     index = ROOT / "index.html"
     html = index.read_text(encoding="utf-8")
-    for name in ("locked.js", "app.js"):
+    for name in ("firebase-config.js", "locked.js", "app.js"):
         version = hashlib.sha256((ROOT / name).read_bytes()).hexdigest()[:10]
         html, n = re.subn(r'src="%s(\?v=[0-9a-f]*)?"' % re.escape(name), 'src="%s?v=%s"' % (name, version), html)
         if n != 1:
@@ -101,6 +102,9 @@ def main():
         input=plain, capture_output=True, check=True)
 
     locked = {
+        # A fresh game room in the live database for every run: changing the
+        # codes or the questions starts a clean game, like komancala's rooms.
+        "room": secrets.token_hex(8),
         "salt": SALT,
         "iterations": ITERATIONS,
         "keys": keys,

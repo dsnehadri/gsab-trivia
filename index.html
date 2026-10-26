@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>GSAB Maroon Trivia Night</title>
-<meta name="description" content="Trivia night for the UChicago Graduate Student Advisory Board: four rounds of eight, run by a trivia master.">
+<meta name="description" content="Trivia night for the UChicago Graduate Student Advisory Board. Join with your team name and answer on your phone.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=EB+Garamond:ital,wght@0,500;0,700;1,500&family=Caveat:wght@700&display=swap">
@@ -12,7 +12,7 @@
 html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 body { margin: 0; }
 [hidden] { display: none !important; }
-/* Layout: maroon banner, one big projector stage in the middle, trivia-master controls docked at the bottom. */
+/* Layout: maroon banner, one big stage in the middle (or the phone view), trivia-master controls docked at the bottom. */
 :root {
   --bg: #f4f3ef;
   --paper: #ffffff;
@@ -75,7 +75,7 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
 .eyebrow { margin: 0; font-size: clamp(.8rem, .5vw + .6rem, 1.05rem); text-transform: uppercase; letter-spacing: .14em; font-weight: 700; color: var(--accent); }
 .display { margin: 0; font-family: var(--f-display); font-weight: 700; line-height: 1.04; letter-spacing: -.01em; font-size: clamp(2.6rem, 6vw + 1rem, 6rem); text-wrap: balance; }
 .display.huge { font-size: clamp(3.4rem, 9vw + 1rem, 9rem); }
-.question { margin: 0; font-family: var(--f-display); font-weight: 700; line-height: 1.12; font-size: clamp(1.7rem, 3vw + .8rem, 3.6rem); text-wrap: balance; max-width: 28ch; }
+.question { margin: 0; font-family: var(--f-display); font-weight: 700; line-height: 1.14; font-size: clamp(1.5rem, 2.2vw + .8rem, 3.2rem); text-wrap: balance; max-width: 34ch; }
 .lede { margin: 0; color: var(--muted); font-size: clamp(1.05rem, 1vw + .7rem, 1.6rem); max-width: 48ch; }
 .wait { margin: 0; font-family: var(--f-mark); font-size: clamp(1.6rem, 1.6vw + 1rem, 2.4rem); color: var(--accent); line-height: 1.1; }
 
@@ -135,15 +135,136 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
 .btn.ghost { background: transparent; color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
 .btn.danger { background: var(--bad); }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.teams { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-.teams th { text-align: left; font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 6px; }
-.teams td { padding: 4px 6px; border-top: 1px solid var(--line); }
-.teams input.input { padding: 6px 8px; }
-.teams .sc { width: 4.2em; text-align: right; }
-.teams .tot { font-weight: 700; text-align: right; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tab { border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 700; text-align: left; display: grid; }
+.tab small { font-weight: 400; color: var(--muted); font-size: .78rem; }
+.tab[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.sk-rank { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.sk-rank li { display: grid; grid-template-columns: 1.6em minmax(0, 1fr) auto; gap: 8px; padding: 6px 10px; border-radius: 8px; background: var(--bg); align-items: baseline; }
+.sk-rank li:first-child { background: var(--accent-soft); }
+.sk-rank li span:nth-child(2) { overflow-wrap: anywhere; }
+.sk-rank .num { font-variant-numeric: tabular-nums; }
+.x.warn { color: var(--bad); }
 .x { background: none; border: 0; color: var(--muted); cursor: pointer; padding: 6px; font-weight: 700; }
 .x:hover { color: var(--bad); }
 
+
+/* Who's on this device */
+.who { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.team-chip { background: rgba(255,255,255,.14); color: var(--on-maroon); border: 0; border-radius: 999px; padding: 6px 12px; font-weight: 700; font-size: .85rem; cursor: pointer; max-width: 16em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body[data-mode="player"] .login-btn { opacity: .75; font-size: .75rem; padding: 4px 10px; }
+
+/* Welcome screen: how to join */
+.join { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+.join-text { display: grid; gap: 8px; flex: 1 1 320px; min-width: 0; }
+.join-url { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.4rem, 2vw + .8rem, 2.6rem); color: var(--accent); overflow-wrap: anywhere; }
+.qr { width: clamp(140px, 16vw, 230px); background: #fff; border-radius: 10px; padding: 8px; line-height: 0; }
+.qr:empty { display: none; }
+.qr svg { width: 100%; height: auto; display: block; }
+
+/* Player phone view */
+.player { width: 100%; max-width: 680px; margin: 0 auto; display: grid; gap: 16px; align-self: start; scroll-margin-top: 12px; }
+.joincard { display: grid; gap: 14px; }
+.joincard .display { font-size: clamp(2rem, 6vw, 3rem); }
+.input.big { font-size: 1.2rem; padding: 14px 14px; }
+.pl-status { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; }
+.pl-status .standings { font-size: 1rem; }
+.pl-live { display: grid; gap: 8px; }
+.pl-live .timer { min-width: 0; }
+.pl-say { margin: 0; font-size: 1.1rem; font-weight: 700; }
+.pl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 12px; flex-wrap: wrap; }
+.pl-head h3 { margin: 0; font-family: var(--f-display); font-size: 1.5rem; }
+.pl-head span { color: var(--muted); font-size: .85rem; }
+.pl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.pl-card { background: var(--paper); border: 1.5px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; }
+.pl-card.current { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.pl-card.is-right { border-color: var(--good); }
+.pl-card.is-wrong { border-color: var(--bad); }
+.pl-qhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.pl-card.current .pl-qhead { color: var(--accent); }
+.pl-q { margin: 0; font-size: 1.05rem; line-height: 1.4; }
+.pl-in { font-size: 1.05rem; padding: 12px; }
+.pl-in:disabled { opacity: .8; }
+.pl-meta { margin: 0; min-height: 1em; font-size: .8rem; color: var(--muted); }
+.pl-meta.bad { color: var(--bad); font-weight: 700; }
+.pl-key { margin: 0; font-size: .95rem; color: var(--good); }
+.pl-reveal { margin: 0; justify-self: start; background: var(--good-soft); color: var(--good); border: 2px solid var(--good); border-radius: 10px; padding: 8px 14px; font-family: var(--f-display); font-weight: 700; font-size: 1.5rem; line-height: 1.15; max-width: 100%; overflow-wrap: anywhere; }
+.badge { border-radius: 999px; padding: 2px 10px; font-size: .78rem; letter-spacing: 0; text-transform: none; }
+.badge.ok { background: var(--good-soft); color: var(--good); }
+.badge.no { background: var(--bad-soft); color: var(--bad); }
+.standings tr.me td { background: var(--accent-soft); }
+
+/* Round tabs and question chips */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tab { border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 700; text-align: left; display: grid; font-size: .9rem; }
+.tab small { font-weight: 400; color: var(--muted); font-size: .75rem; }
+.tab[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { position: relative; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 999px; padding: 8px 14px; cursor: pointer; font-weight: 700; min-width: 3.2em; }
+.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--paper); }
+.chip .dot { position: absolute; top: -6px; right: -6px; background: var(--bad); color: #fff; border-radius: 999px; font-size: .7rem; min-width: 1.5em; padding: 1px 4px; line-height: 1.3; }
+
+/* Judging */
+.jg-panel { width: min(100%, 760px); }
+.jg-q { background: var(--bg); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; }
+.jg-qtext { margin: 0; font-size: 1rem; }
+.jg-key { margin: 0; color: var(--good); font-size: 1.05rem; }
+.jg-tally { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--muted); font-size: .9rem; }
+.btn.small { padding: 8px 14px; font-size: .85rem; }
+.jg-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.jg-row { display: flex; align-items: center; gap: 10px; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.jg-row.is-right { border-color: var(--good); background: var(--good-soft); }
+.jg-row.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.jg-who { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.jg-team { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); overflow-wrap: anywhere; }
+.jg-ans { font-size: 1.15rem; font-weight: 700; overflow-wrap: anywhere; }
+.jg-ans.none { color: var(--muted); font-weight: 400; font-style: italic; }
+.jg-btns { display: flex; gap: 8px; flex: none; }
+.jb { width: 52px; height: 52px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); font-size: 1.5rem; font-weight: 700; cursor: pointer; color: var(--muted); }
+.jb.ok[aria-pressed="true"] { background: var(--good); border-color: var(--good); color: #fff; }
+.jb.no[aria-pressed="true"] { background: var(--bad); border-color: var(--bad); color: #fff; }
+.jg-nav { justify-content: space-between; }
+.jg-more summary { cursor: pointer; font-weight: 700; color: var(--accent); padding-block: 4px; }
+.sk-rank { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.sk-rank li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 10px; border-radius: 8px; background: var(--bg); }
+.sk-rank li:first-child { background: var(--accent-soft); }
+.sk-rank .num { font-variant-numeric: tabular-nums; }
+.jg-teams { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.jg-teams li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 4px 0; border-top: 1px solid var(--line); }
+.x.warn { color: var(--bad); }
+
+/* Phones: panels fill the screen */
+@media (max-width: 600px) {
+  .overlay { padding: 0; place-items: stretch; }
+  .panel, .panel.wide, .jg-panel { width: 100%; border-radius: 0; min-height: 100%; padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); align-content: start; }
+  .hostbar-in { gap: 6px; }
+  .hb { padding: 8px 10px; font-size: .82rem; }
+  .band { padding-block: 10px; }
+  .brand { font-size: 1.25rem; }
+}
+
+/* Printable question sheet: one Letter page, four rounds in four quadrants. */
+#printSheet { display: none; }
+@media print {
+  @page { size: letter portrait; margin: 0.4in; }
+  html, body { background: #fff !important; color: #000 !important; height: auto; padding: 0 !important; margin: 0 !important; }
+  .app, .overlay { display: none !important; }
+  #printSheet { display: grid; grid-template-rows: auto 1fr; gap: 0.12in; height: 10.15in; color: #000; font-family: var(--f-body); font-size: 8.3pt; line-height: 1.22; }
+  .ps-head { background: none; color: #000; display: flex; justify-content: space-between; align-items: flex-end; gap: 0.3in; border-bottom: 2pt solid #800000; padding-bottom: 0.06in; }
+  .ps-org { margin: 0; font-size: 7pt; text-transform: uppercase; letter-spacing: .14em; font-weight: 700; color: #800000; }
+  .ps-head h1 { margin: 0; font-family: var(--f-display); font-size: 20pt; line-height: 1; }
+  .ps-team { display: flex; align-items: flex-end; gap: 6pt; font-weight: 700; font-size: 9pt; }
+  .ps-team span { display: block; width: 2.8in; border-bottom: 0.75pt solid #000; height: 14pt; }
+  .ps-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0.14in; min-height: 0; }
+  .ps-round { border: 0.75pt solid #999; border-radius: 6pt; padding: 0.1in 0.12in; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  .ps-round h2 { margin: 0 0 4pt; font-family: var(--f-display); font-size: 13pt; line-height: 1.1; display: flex; gap: 6pt; align-items: baseline; }
+  .ps-round h2 span { font-family: var(--f-body); font-size: 7pt; text-transform: uppercase; letter-spacing: .12em; color: #800000; }
+  .ps-round ol { margin: 0; padding-left: 1.5em; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
+  .ps-round li { break-inside: avoid; }
+  .ps-round li::marker { font-weight: 700; }
+  .ps-round li p { margin: 0; }
+  .ps-line { border-bottom: 0.5pt solid #777; height: 13pt; }
+}
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -155,10 +276,13 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
         <p class="org">UChicago Graduate Student Advisory Board</p>
         <h1 class="brand">Maroon <em>Trivia</em> Night</h1>
       </div>
-      <div id="who"></div>
+      <div id="who" class="who"></div>
     </div>
   </header>
-  <main class="gutter"><div class="stage" id="stage" aria-live="polite"></div></main>
+  <main class="gutter">
+    <div class="stage" id="stage" aria-live="polite"></div>
+    <div class="player" id="player" hidden></div>
+  </main>
   <div class="hostbar" id="hostbar" hidden>
     <div class="hostbar-in gutter">
       <div class="where" id="where"></div>
@@ -167,11 +291,13 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
         <button class="hb primary" id="next">Next →</button>
         <button class="hb" id="tmr">Pause timer</button>
         <button class="hb" id="peekBtn" aria-pressed="false">Peek at answer</button>
-        <button class="hb" id="teamsBtn">Teams &amp; scores</button>
-        <button class="hb" id="audBtn">Open audience screen</button>
+        <button class="hb" id="judgeBtn">Judge answers</button>
+        <button class="hb" id="printBtn">Print question sheet</button>
+        <button class="hb" id="audBtn">Big-screen view</button>
         <button class="hb" id="fsBtn">Full screen</button>
         <button class="hb" id="logoutBtn">Log out</button>
       </div>
+      <p class="msg" id="offlineNote" hidden>The live database isn't set up yet, so the game runs on this computer only and phones can't join. See "Setting up Firebase" in the README.</p>
       <div class="peek" id="peek" hidden></div>
       <p class="msg" id="msg" hidden></p>
     </div>
@@ -185,7 +311,7 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
       <label for="code">Host code</label>
       <input class="input" id="code" type="password" required autocomplete="off">
     </div>
-    <p class="err" id="loginErr" hidden>That code doesn't match. Check with the event organizer and try again.</p>
+    <p class="err" id="loginErr" hidden></p>
     <div class="row">
       <button class="btn" type="submit" id="loginGo">Log in</button>
       <button class="btn ghost" type="button" id="loginCancel">Cancel</button>
@@ -193,19 +319,19 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
   </form>
 </div>
 
-<div class="overlay" id="teamsBox" hidden>
-  <div class="panel wide" role="dialog" aria-label="Teams and scores">
-    <div class="panel-head"><h3>Teams &amp; scores</h3><button class="btn ghost" id="teamsClose">Done</button></div>
-    <form class="row" id="addTeam">
-      <label class="sr" for="teamName">Team name</label>
-      <input class="input" id="teamName" placeholder="Team name" maxlength="40" style="flex:1 1 200px">
-      <button class="btn" type="submit">Add team</button>
-    </form>
-    <div class="tbl-wrap" id="teamsTable"></div>
+<div class="overlay" id="judgeBox" hidden>
+  <div class="panel jg-panel" role="dialog" aria-label="Judge answers">
+    <div class="panel-head"><h3>Judge answers</h3><button class="btn ghost" id="judgeClose">Done</button></div>
+    <div class="tabs" id="jgRounds" role="group" aria-label="Round"></div>
+    <div class="chips" id="jgQs" role="group" aria-label="Question"></div>
+    <div id="jgBody" class="stack" style="display:grid;gap:12px"></div>
+    <div class="row jg-nav"><button class="btn ghost" id="jgPrev">← Previous</button><button class="btn" id="jgNext">Next question →</button></div>
+    <details class="jg-more" id="jgStandings"></details>
+    <details class="jg-more" id="jgTeams"></details>
     <div class="row" style="border-top:1px solid var(--line);padding-top:14px">
       <button class="btn ghost" id="resetBtn">Reset the game</button>
       <span id="resetAsk" class="row" hidden>
-        <span style="color:var(--muted)">Go back to the welcome screen and clear all teams and scores?</span>
+        <span style="color:var(--muted)">Clear all teams, answers and scores and go back to the welcome screen?</span>
         <button class="btn danger" id="resetYes">Yes, reset</button>
         <button class="btn ghost" id="resetNo">Keep playing</button>
       </span>
@@ -213,7 +339,15 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
   </div>
 </div>
 
-<script src="locked.js?v=b97038c408"></script>
-<script src="app.js?v=aa1bcde322"></script>
+<div id="printSheet" aria-hidden="true"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="firebase-config.js?v=b5c4dd540b"></script>
+<script>
+  // Rehearsal mode: ?local shares the game between tabs on this computer instead of using Firebase.
+  if (/[?&]local\b/.test(location.search)) document.write('<script src="tests/local-backend.js"><\/script>');
+</script>
+<script src="locked.js?v=823c271992"></script>
+<script src="app.js?v=9fd598b888"></script>
 </body>
 </html>
