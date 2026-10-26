@@ -1,0 +1,7 @@
+# The questions and answers in the clear. They ship encrypted in locked.js,
+# and set-host-codes.py is what turns one into the other.
+questions.json
+questions*.json
+
+# scratch files
+_*

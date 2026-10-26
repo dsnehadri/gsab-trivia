@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GSAB Maroon Trivia Night</title>
+<meta name="description" content="Trivia night for the UChicago Graduate Student Advisory Board: four rounds of eight, run by a trivia master.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=EB+Garamond:ital,wght@0,500;0,700;1,500&family=Caveat:wght@700&display=swap">
+<style>
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+[hidden] { display: none !important; }
+/* Layout: maroon banner, one big projector stage in the middle, trivia-master controls docked at the bottom. */
+:root {
+  --bg: #f4f3ef;
+  --paper: #ffffff;
+  --ink: #221b1c;
+  --muted: #6b6464;
+  --line: #d6d6ce;
+  --accent: #800000;
+  --accent-soft: #f6eaea;
+  --maroon: #800000;
+  --on-maroon: #ffffff;
+  --on-maroon-muted: #e8c4c4;
+  --good: #1d7a45;
+  --good-soft: #e3f2e8;
+  --bad: #b3261e;
+  --bar: #2b2324;
+  --on-bar: #f4efed;
+  --shadow: 0 1px 0 rgba(34,27,28,.05), 0 10px 28px -14px rgba(60,10,10,.3);
+  --f-display: "EB Garamond", Garamond, "Times New Roman", serif;
+  --f-body: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+  --f-mark: "Caveat", "Comic Sans MS", cursive;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141112; --paper: #1d191a; --ink: #ece7e4; --muted: #a59c98; --line: #3a3234;
+    --accent: #e3929a; --accent-soft: #3a2225; --maroon: #6e1418; --on-maroon: #fbf4f2; --on-maroon-muted: #e2b9bb;
+    --good: #6fcf97; --good-soft: #15301f; --bad: #ff8a7e; --bar: #0b0909; --on-bar: #ece7e4;
+    --shadow: 0 10px 28px -14px rgba(0,0,0,.7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141112; --paper: #1d191a; --ink: #ece7e4; --muted: #a59c98; --line: #3a3234;
+  --accent: #e3929a; --accent-soft: #3a2225; --maroon: #6e1418; --on-maroon: #fbf4f2; --on-maroon-muted: #e2b9bb;
+  --good: #6fcf97; --good-soft: #15301f; --bad: #ff8a7e; --bar: #0b0909; --on-bar: #ece7e4;
+  --shadow: 0 10px 28px -14px rgba(0,0,0,.7);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 1rem; line-height: 1.45; }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.app { min-height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
+button, input { font: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Banner */
+header { background: var(--maroon); color: var(--on-maroon); }
+.band { max-width: 1280px; margin: 0 auto; padding-block: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px 20px; flex-wrap: wrap; }
+.org { margin: 0; font-size: .72rem; text-transform: uppercase; letter-spacing: .16em; font-weight: 700; color: var(--on-maroon-muted); }
+.brand { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 1.5rem; line-height: 1.1; }
+.brand em { font-weight: 500; }
+.login-btn { background: transparent; color: var(--on-maroon); border: 1.5px solid var(--on-maroon-muted); border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: .85rem; font-weight: 700; }
+.login-btn:hover { background: rgba(255,255,255,.12); }
+.host-chip { font-size: .8rem; font-weight: 700; color: var(--on-maroon); background: rgba(255,255,255,.14); border-radius: 999px; padding: 5px 12px; }
+
+/* Stage */
+main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px); }
+.stage { width: 100%; max-width: 1280px; margin: 0 auto; display: grid; gap: clamp(14px, 2.4vh, 28px); }
+.eyebrow { margin: 0; font-size: clamp(.8rem, .5vw + .6rem, 1.05rem); text-transform: uppercase; letter-spacing: .14em; font-weight: 700; color: var(--accent); }
+.display { margin: 0; font-family: var(--f-display); font-weight: 700; line-height: 1.04; letter-spacing: -.01em; font-size: clamp(2.6rem, 6vw + 1rem, 6rem); text-wrap: balance; }
+.display.huge { font-size: clamp(3.4rem, 9vw + 1rem, 9rem); }
+.question { margin: 0; font-family: var(--f-display); font-weight: 700; line-height: 1.12; font-size: clamp(1.7rem, 3vw + .8rem, 3.6rem); text-wrap: balance; max-width: 28ch; }
+.lede { margin: 0; color: var(--muted); font-size: clamp(1.05rem, 1vw + .7rem, 1.6rem); max-width: 48ch; }
+.wait { margin: 0; font-family: var(--f-mark); font-size: clamp(1.6rem, 1.6vw + 1rem, 2.4rem); color: var(--accent); line-height: 1.1; }
+
+.roundlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.roundlist li { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 2px; }
+.roundlist .num { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.roundlist strong { font-family: var(--f-display); font-size: 1.6rem; line-height: 1.1; }
+.roundlist small { color: var(--muted); font-size: .9rem; }
+
+.qhead { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.qnum { font-family: var(--f-display); font-weight: 700; font-size: clamp(1.1rem, 1vw + .8rem, 1.6rem); color: var(--muted); font-variant-numeric: tabular-nums; }
+.timer { display: flex; align-items: center; gap: 12px; min-width: min(320px, 100%); }
+.timer .track { flex: 1; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.timer .fill { height: 100%; background: var(--accent); border-radius: 99px; transform-origin: left; }
+.timer.low .fill { background: var(--bad); }
+.timer .secs { font-variant-numeric: tabular-nums; font-weight: 700; font-size: clamp(1.1rem, 1vw + .8rem, 1.6rem); min-width: 3ch; text-align: right; }
+.timer .done { font-family: var(--f-mark); font-size: 1.8rem; color: var(--bad); line-height: 1; }
+
+.opts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(10px, 1.4vw, 18px); }
+@media (max-width: 640px) { .opts { grid-template-columns: 1fr; } }
+.opt { position: relative; background: var(--paper); border: 2px solid var(--line); border-radius: 12px; padding: clamp(12px, 1.6vh, 20px) clamp(14px, 1.6vw, 22px); display: flex; gap: 14px; align-items: center; min-width: 0; font-size: clamp(1.1rem, 1.3vw + .6rem, 1.9rem); line-height: 1.25; }
+.opt .key { flex: none; width: 1.8em; height: 1.8em; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: .85em; }
+.opt.right { border-color: var(--good); background: var(--good-soft); }
+.opt.right .key { background: var(--good); color: var(--paper); }
+.opt.dim { opacity: .45; }
+.mark { margin-left: auto; font-family: var(--f-mark); font-size: 1.6em; color: var(--good); line-height: 1; transform: rotate(-8deg); }
+.fact { margin: 0; background: var(--accent-soft); border-radius: 12px; padding: 14px 18px; font-size: clamp(1rem, .9vw + .7rem, 1.45rem); max-width: 70ch; }
+.fact b { color: var(--accent); }
+
+.standings { width: 100%; border-collapse: collapse; font-size: clamp(1rem, 1vw + .6rem, 1.5rem); font-variant-numeric: tabular-nums; }
+.standings th { text-align: left; font-size: .7em; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
+.standings td { padding: 10px; border-bottom: 1px solid var(--line); }
+.standings .r, .standings th.r { text-align: right; }
+.standings tr.lead td { font-weight: 700; }
+.standings tr.lead td:first-child { color: var(--accent); }
+.tbl-wrap { overflow-x: auto; }
+.winner { margin: 0; font-family: var(--f-mark); font-size: clamp(2rem, 3vw + 1rem, 3.6rem); color: var(--accent); line-height: 1.05; }
+
+/* Host bar */
+.hostbar { background: var(--bar); color: var(--on-bar); position: sticky; bottom: 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.hostbar-in { max-width: 1280px; margin: 0 auto; padding-block: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.where { font-size: .85rem; font-weight: 700; min-width: 0; }
+.where small { display: block; font-weight: 400; opacity: .7; }
+.ctrls { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.hb { background: rgba(255,255,255,.1); color: var(--on-bar); border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: .88rem; font-weight: 700; }
+.hb:hover { background: rgba(255,255,255,.18); }
+.hb:disabled { opacity: .4; cursor: default; }
+.hb.primary { background: var(--maroon); color: var(--on-maroon); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+.hb[aria-pressed="true"] { background: rgba(255,255,255,.28); }
+.peek { flex-basis: 100%; font-size: .9rem; padding: 6px 10px; border-radius: 6px; background: rgba(255,255,255,.08); }
+.peek b { color: #9fe3b8; }
+.msg { flex-basis: 100%; font-size: .85rem; opacity: .85; margin: 0; }
+
+/* Overlays */
+.overlay { position: fixed; inset: 0; background: rgba(20,10,10,.55); display: grid; place-items: center; z-index: 20; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.panel { background: var(--paper); color: var(--ink); border-radius: 14px; box-shadow: var(--shadow); width: min(100%, 420px); padding: 22px; display: grid; gap: 14px; max-height: 100%; overflow: auto; }
+.panel.wide { width: min(100%, 860px); }
+.panel h3 { margin: 0; font-family: var(--f-display); font-size: 1.7rem; line-height: 1.1; }
+.panel p { margin: 0; color: var(--muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-weight: 700; font-size: .9rem; }
+.input { border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--bg); color: var(--ink); width: 100%; min-width: 0; }
+.input:focus { border-color: var(--accent); outline: none; }
+.err { color: var(--bad) !important; font-weight: 700; font-size: .9rem; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 0; border-radius: 999px; padding: 10px 20px; background: var(--accent); color: var(--paper); font-weight: 700; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.btn.danger { background: var(--bad); }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.teams { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.teams th { text-align: left; font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 6px; }
+.teams td { padding: 4px 6px; border-top: 1px solid var(--line); }
+.teams input.input { padding: 6px 8px; }
+.teams .sc { width: 4.2em; text-align: right; }
+.teams .tot { font-weight: 700; text-align: right; }
+.x { background: none; border: 0; color: var(--muted); cursor: pointer; padding: 6px; font-weight: 700; }
+.x:hover { color: var(--bad); }
+
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="band gutter">
+      <div>
+        <p class="org">UChicago Graduate Student Advisory Board</p>
+        <h1 class="brand">Maroon <em>Trivia</em> Night</h1>
+      </div>
+      <div id="who"></div>
+    </div>
+  </header>
+  <main class="gutter"><div class="stage" id="stage" aria-live="polite"></div></main>
+  <div class="hostbar" id="hostbar" hidden>
+    <div class="hostbar-in gutter">
+      <div class="where" id="where"></div>
+      <div class="ctrls">
+        <button class="hb" id="prev">← Back</button>
+        <button class="hb primary" id="next">Next →</button>
+        <button class="hb" id="tmr">Pause timer</button>
+        <button class="hb" id="peekBtn" aria-pressed="false">Peek at answer</button>
+        <button class="hb" id="teamsBtn">Teams &amp; scores</button>
+        <button class="hb" id="audBtn">Open audience screen</button>
+        <button class="hb" id="fsBtn">Full screen</button>
+        <button class="hb" id="logoutBtn">Log out</button>
+      </div>
+      <div class="peek" id="peek" hidden></div>
+      <p class="msg" id="msg" hidden></p>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="loginBox" hidden>
+  <form class="panel" id="loginForm" autocomplete="off">
+    <h3>Trivia master login</h3>
+    <p>Enter your host code to run the game from this screen.</p>
+    <div class="field">
+      <label for="code">Host code</label>
+      <input class="input" id="code" type="password" required autocomplete="off">
+    </div>
+    <p class="err" id="loginErr" hidden>That code doesn't match. Check with the event organizer and try again.</p>
+    <div class="row">
+      <button class="btn" type="submit" id="loginGo">Log in</button>
+      <button class="btn ghost" type="button" id="loginCancel">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<div class="overlay" id="teamsBox" hidden>
+  <div class="panel wide" role="dialog" aria-label="Teams and scores">
+    <div class="panel-head"><h3>Teams &amp; scores</h3><button class="btn ghost" id="teamsClose">Done</button></div>
+    <p>Enter each team's points for a round after marking the answer sheets. Standings update on screen right away.</p>
+    <form class="row" id="addTeam">
+      <label class="sr" for="teamName">Team name</label>
+      <input class="input" id="teamName" placeholder="Team name" maxlength="40" style="flex:1 1 200px">
+      <button class="btn" type="submit">Add team</button>
+    </form>
+    <div class="tbl-wrap" id="teamsTable"></div>
+    <div class="row" style="border-top:1px solid var(--line);padding-top:14px">
+      <button class="btn ghost" id="resetBtn">Reset the game</button>
+      <span id="resetAsk" class="row" hidden>
+        <span style="color:var(--muted)">Go back to the welcome screen and clear all teams and scores?</span>
+        <button class="btn danger" id="resetYes">Yes, reset</button>
+        <button class="btn ghost" id="resetNo">Keep playing</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script src="locked.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
