@@ -7,7 +7,6 @@
 const QUESTION_SECONDS = 45;
 const STATE_KEY = "gsab-trivia-night";
 const SESSION_KEY = "gsab-trivia-host-key";
-const L = "ABCD";
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
@@ -17,7 +16,7 @@ if (!LOCK) {
   return;
 }
 const ROUNDS = LOCK.rounds;          // public: name, count
-let QS = null;                       // unlocked: per round, [question, options, answer index]
+let QS = null;                       // unlocked: per round, [question, answer]
 
 /* ---------- Unlocking ---------- */
 const enc = new TextEncoder();
@@ -44,7 +43,7 @@ async function openQuestions(keyHex) {
   const key = await crypto.subtle.importKey("raw", hexToBytes(keyHex), { name: "AES-CBC" }, false, ["decrypt"]);
   const plain = await crypto.subtle.decrypt({ name: "AES-CBC", iv: raw.slice(0, 16) }, key, raw.slice(16));
   const data = JSON.parse(new TextDecoder().decode(plain));
-  return data.rounds.map(r => r.questions.map(q => [q.q, q.options, L.indexOf(q.answer)]));
+  return data.rounds.map(r => r.questions.map(q => [q.q, q.answer]));
 }
 window.GSAB_TEST = { keyFromCode, openQuestions };
 
@@ -82,8 +81,8 @@ function slideFor(i) {
   const s = SEQ[i], out = { ...s };
   if ((s.t === "q" || s.t === "a") && QS) {
     const q = QS[s.r][s.q];
-    out.text = q[0]; out.opts = q[1];
-    if (s.t === "a") out.answer = q[2];
+    out.text = q[0];
+    if (s.t === "a") out.answer = q[1];
   }
   return out;
 }
@@ -156,7 +155,7 @@ function render() {
     st.innerHTML = `
       <p class="eyebrow">${n} rounds of ${ROUNDS[0].count}</p>
       <h2 class="display">Welcome</h2>
-      <p class="lede">Write each answer as A, B, C or D.</p>
+      <p class="lede">Write your answers on paper.</p>
       <ol class="roundlist">${ROUNDS.map((r, i) => `<li><span class="num">Round ${i + 1}</span><strong>${esc(r.name)}</strong></li>`).join("")}</ol>
       ${state.teams.length ? `<p class="lede">Teams tonight: ${state.teams.map(t => esc(t.name)).join(", ")}</p>` : ""}
       ${isHost ? `<p class="wait">Press Next when everyone's ready.</p>` : waiting}`;
@@ -174,11 +173,7 @@ function render() {
         ${reveal ? "" : `<div class="timer" id="timer"><div class="track"><div class="fill"></div></div><span class="secs"></span></div>`}
       </div>
       <h2 class="question">${esc(s.text)}</h2>
-      <ul class="opts">${s.opts.map((o, k) => {
-        const cls = reveal ? (k === s.answer ? "right" : "dim") : "";
-        return `<li class="opt ${cls}"><span class="key">${L[k]}</span><span>${esc(o)}</span>${reveal && k === s.answer ? `<span class="mark" aria-label="correct answer">✓</span>` : ""}</li>`;
-      }).join("")}</ul>
-`;
+      ${reveal ? `<p class="answer"><span class="sr">Answer: </span>${esc(s.answer)}</p>` : ""}`;
     paintTimer();
   } else if (s.t === "answers") {
     st.innerHTML = `
@@ -225,7 +220,7 @@ function renderChrome() {
   $("peekBtn").hidden = s.t !== "q";
   $("peekBtn").setAttribute("aria-pressed", String(peekOn));
   const pk = $("peek");
-  if (s.t === "q" && peekOn) { const q = QS[s.r][s.q]; pk.innerHTML = `Answer (only on this screen): <b>${L[q[2]]}: ${esc(q[1][q[2]])}</b>`; pk.hidden = false; }
+  if (s.t === "q" && peekOn) { const q = QS[s.r][s.q]; pk.innerHTML = `Answer (only on this screen): <b>${esc(q[1])}</b>`; pk.hidden = false; }
   else pk.hidden = true;
 }
 

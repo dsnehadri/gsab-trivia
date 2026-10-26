@@ -4,7 +4,7 @@ A trivia night for the UChicago Graduate Student Advisory Board, on one static
 page. The trivia master logs in with a code and moves the game along; the
 questions go up on a projector and teams write their answers on paper.
 
-Four rounds of eight multiple-choice questions: History, Politics, Pop Culture
+Four rounds of eight free-response questions: History, Politics, Pop Culture
 and Art.
 
 ## Running the night

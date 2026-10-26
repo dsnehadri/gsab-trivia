@@ -93,14 +93,7 @@ main { display: grid; align-items: center; padding-block: clamp(20px, 4vh, 48px)
 .timer .secs { font-variant-numeric: tabular-nums; font-weight: 700; font-size: clamp(1.1rem, 1vw + .8rem, 1.6rem); min-width: 3ch; text-align: right; }
 .timer .done { font-family: var(--f-mark); font-size: 1.8rem; color: var(--bad); line-height: 1; }
 
-.opts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(10px, 1.4vw, 18px); }
-@media (max-width: 640px) { .opts { grid-template-columns: 1fr; } }
-.opt { position: relative; background: var(--paper); border: 2px solid var(--line); border-radius: 12px; padding: clamp(12px, 1.6vh, 20px) clamp(14px, 1.6vw, 22px); display: flex; gap: 14px; align-items: center; min-width: 0; font-size: clamp(1.1rem, 1.3vw + .6rem, 1.9rem); line-height: 1.25; }
-.opt .key { flex: none; width: 1.8em; height: 1.8em; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: .85em; }
-.opt.right { border-color: var(--good); background: var(--good-soft); }
-.opt.right .key { background: var(--good); color: var(--paper); }
-.opt.dim { opacity: .45; }
-.mark { margin-left: auto; font-family: var(--f-mark); font-size: 1.6em; color: var(--good); line-height: 1; transform: rotate(-8deg); }
+.answer { margin: 0; justify-self: start; background: var(--good-soft); color: var(--good); border: 2px solid var(--good); border-radius: 12px; padding: clamp(12px, 1.8vh, 22px) clamp(16px, 2vw, 28px); font-family: var(--f-display); font-weight: 700; font-size: clamp(1.6rem, 2.6vw + .8rem, 3.2rem); line-height: 1.15; max-width: 100%; }
 
 .standings { width: 100%; border-collapse: collapse; font-size: clamp(1rem, 1vw + .6rem, 1.5rem); font-variant-numeric: tabular-nums; }
 .standings th { text-align: left; font-size: .7em; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }

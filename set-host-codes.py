@@ -52,10 +52,8 @@ def load_questions():
             where = f"Round {ri} ({r['name']}), question {qi}"
             if not q.get("q"):
                 sys.exit(f"{where}: the question text is empty.")
-            if len(q.get("options", [])) != 4:
-                sys.exit(f"{where}: needs exactly 4 options.")
-            if q.get("answer") not in ("A", "B", "C", "D"):
-                sys.exit(f"{where}: answer must be one of A, B, C or D.")
+            if not str(q.get("answer", "")).strip():
+                sys.exit(f"{where}: the answer is empty.")
     return data
 
 
