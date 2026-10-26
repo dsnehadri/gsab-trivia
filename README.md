@@ -41,7 +41,7 @@ editing `questions.json`:
 python3 set-host-codes.py "first code" "second code"
 ```
 
-Then commit the new `locked.js`. Codes ignore capitals and surrounding spaces.
+Then commit the new `locked.js` and `index.html`. Codes ignore capitals and surrounding spaces.
 Every run replaces all codes, so list every code you want to keep. Keep a copy
 of `questions.json` somewhere safe: it's the only readable copy of the questions.
 
@@ -52,6 +52,9 @@ doesn't. It's the same idea as komancala's room key. It keeps answers out of
 casual view; it is not bank security, so pick a code that isn't easy to guess.
 
 ## Hosting
+
+After editing `app.js` (but not the questions), run `python3 set-host-codes.py --stamp`
+so browsers load the new version instead of a cached one.
 
 GitHub Pages: **Settings → Pages → Deploy from a branch**, `main`, `/ (root)`.
 No build step.

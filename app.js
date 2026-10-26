@@ -5,7 +5,7 @@
 "use strict";
 
 const QUESTION_SECONDS = 45;
-const STATE_KEY = "gsab-trivia-night";
+const STATE_KEY = "gsab-trivia-night-v2"; // v2: free-response slides
 const SESSION_KEY = "gsab-trivia-host-key";
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));

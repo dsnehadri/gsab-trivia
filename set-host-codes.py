@@ -13,9 +13,13 @@ content key. A right code recovers the key and the checksum matches; a wrong
 one does not. The codes themselves are never written anywhere.
 
     python3 set-host-codes.py "first code" ["second code" ...]
+    python3 set-host-codes.py --stamp      # after editing app.js only
 
 Codes ignore case and surrounding spaces. Run this again after editing
 questions.json, passing the codes you want to keep.
+
+Every run also stamps index.html's script links with a hash of app.js and
+locked.js (?v=...), so browsers fetch the new files instead of a cached copy.
 """
 
 import base64
@@ -23,6 +27,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import secrets
 import subprocess
 import sys
@@ -57,7 +62,23 @@ def load_questions():
     return data
 
 
+def stamp():
+    """Point index.html's script tags at the current app.js and locked.js."""
+    index = ROOT / "index.html"
+    html = index.read_text(encoding="utf-8")
+    for name in ("locked.js", "app.js"):
+        version = hashlib.sha256((ROOT / name).read_bytes()).hexdigest()[:10]
+        html, n = re.subn(r'src="%s(\?v=[0-9a-f]*)?"' % re.escape(name), 'src="%s?v=%s"' % (name, version), html)
+        if n != 1:
+            sys.exit(f"index.html should have exactly one <script src=\"{name}\">; found {n}.")
+    index.write_text(html, encoding="utf-8")
+    print("Stamped index.html script links.")
+
+
 def main():
+    if sys.argv[1:] == ["--stamp"]:
+        stamp()
+        return
     codes = sys.argv[1:]
     if not codes or any(not norm(c) for c in codes):
         sys.exit(__doc__)
@@ -93,6 +114,7 @@ def main():
         encoding="utf-8")
     total = sum(r["count"] for r in locked["rounds"])
     print(f"Wrote locked.js: {len(locked['rounds'])} rounds, {total} questions, {len(codes)} trivia master code(s).")
+    stamp()
 
 
 if __name__ == "__main__":
