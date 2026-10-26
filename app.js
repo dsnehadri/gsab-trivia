@@ -533,8 +533,11 @@ async function becomeHost(keyHex) {
     backend.watch("marks", v => { marks = v || {}; syncStandings(); refreshJudge(); }),
   ];
   renderPrintSheet();
-  if (!live.v) publish(liveFor(0, restTimer()));
-  else publish(liveFor(live.step, live.timer));
+  // Pick up the game where it is (another trivia master, or this phone before a reload), never restart it.
+  let cur = null;
+  try { cur = await backend.get("live"); } catch {}
+  if (cur) { live = normLive(cur); liveLoaded = true; publish(liveFor(live.step, live.timer)); }
+  else publish(liveFor(0, restTimer()));
 }
 
 function openLogin() { $("loginErr").hidden = true; $("code").value = ""; $("loginBox").hidden = false; $("code").focus(); }
